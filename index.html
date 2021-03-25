@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<!-- Bootstrap Link -->
+		<link
+			rel="stylesheet"
+			href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+		/>
+		<title>DataBase Test Site</title>
+	</head>
+	<body>
+		<div class="w-75 m-auto p-2 shadow">
+			<!-- Heading Added -->
+			<h1 class="text-center p-3 text-info">
+				Product Added And Remove Systeam!!!
+			</h1>
+			<!-- product Added From  -->
+			<form action="/addProduct" method="post">
+				<div class="row">
+					<!-- Single input value -->
+					<div class="col">
+						<input
+							class="form-control"
+							type="text"
+							placeholder="Product Name"
+							name="name"
+						/>
+					</div>
+					<!-- Single input value -->
+					<div class="col">
+						<input
+							class="form-control"
+							type="text"
+							placeholder="Product Price"
+							name="price"
+						/>
+					</div>
+					<!-- Single input value -->
+					<div class="col">
+						<input
+							class="form-control"
+							type="text"
+							placeholder="Product Quantity"
+							name="quantity"
+						/>
+					</div>
+				</div>
+				<br />
+				<button class="form-control btn btn-outline-primary" type="submit">
+					Add product
+				</button>
+			</form>
+		</div>
+		<!-- From Section End -->
+
+		<!-- Product List Section -->
+		<div id="pd" class="w-75 m-auto">
+			<table class="table table-striped table-hover mt-5 p-2">
+				<thead>
+					<tr class="text-center">
+						<th scope="col">Name</th>
+						<th scope="col">Price</th>
+						<th scope="col">Quantity</th>
+						<th scope="col">Update And Delete</th>
+					</tr>
+				</thead>
+			</table>
+		</div>
+
+		<!-- Update Product Show -->
+		<div id="update">
+			<!--  -->
+		</div>
+		<!-- Script Tag -->
+		<script>
+			/* Show Product Ui  Function */
+			function loadAllProducts() {
+				fetch('/products')
+					.then((res) => res.json())
+					.then((products) => {
+						products.forEach((product) => {
+							const container = document.getElementById('pd');
+
+							const item = document.createElement('p');
+							item.innerHTML =
+								/* ` // Ay Code Gula Delete button Thik Moto Kaj Kore!!.
+
+							<strong>${product.name}</strong>price: ${product.price}
+							 quantity: ${product.quantity}
+							 <button onclick="loadProduct('${product._id}')">Update</button>
+							 <button onclick="deleteProduct(event,'${product._id}')">Delete</Button>
+							 `; */
+								`<table class="table table-striped table-hover">
+								<tbody> /* Delete Button Reload Then Working Sad */
+									<tr class="text-center">
+									<td >${product.name}</td>
+									<td>${product.price}</td>
+									<td>${product.quantity}</td>
+									<td class="d-flex justify-content-around"><button class="btn btn-outline-success" onclick="loadProduct('${product._id}')">Update</button><button class="btn btn-outline-warning" onclick="deleteProduct(event,'${product._id}')">Delete</Button></td>
+									</tr>
+									</tbody>
+								</table>
+							 `;
+							container.appendChild(item);
+						});
+					});
+			}
+			loadAllProducts();
+			/* Update product */
+			function loadProduct(id) {
+				fetch(`product/${id}`)
+					.then((res) => res.json())
+					.then((data) => {
+						const update = document.getElementById('update');
+						update.innerHTML = `
+						<h3>Update: ${data._id}</h3>
+						price: <input type="text" value="${data.price}" id="price">
+						<br>
+						quantity: <input type="text" value="${data.quantity}" id="quantity">
+						<br>
+						<button onclick="updateProduct('${data._id}')">Submit</button>
+						`;
+					});
+			}
+
+			/* Update Product Server Push And Ui  */
+			function updateProduct(id) {
+				const price = document.getElementById('price').value;
+				const quantity = document.getElementById('quantity').value;
+				const product = { id, price, quantity };
+				fetch(`/update/${id}`, {
+					method: 'PATCH',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify(product),
+				})
+					.then((res) => res.json())
+					.then((result) => {
+						if (result) {
+							loadAllProducts();
+							document.getElementById('update').innerHTML = ' ';
+						}
+					});
+			}
+
+			/* Delete Product Function */
+			function deleteProduct(event, id) {
+				fetch(`/delete/${id}`, {
+					method: 'DELETE',
+				})
+					.then((res) => res.json())
+					.then((result) => {
+						if (result) {
+							event.target.parentNode.style.display = 'none';
+						}
+					});
+			}
+		</script>
+	</body>
+</html>
