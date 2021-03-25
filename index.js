@@ -3,9 +3,9 @@ const bodyParser = require('body-parser');
 const MongoClient = require('mongodb').MongoClient;
 const ObjectId = require('mongodb').ObjectId;
 
-// adminUser
+// adminUserdborganic
 const uri =
-	'mongodb+srv://adminUser:adminUser@cluster0.2ctf2.mongodb.net/organicdb?retryWrites=true&w=majority';
+	'mongodb+srv://adminUser:<username>@cluster0.2ctf2.mongodb.net/<Databasename>?retryWrites=true&w=majority';
 const client = new MongoClient(uri, {
 	useNewUrlParser: true,
 	useUnifiedTopology: true,
@@ -21,7 +21,7 @@ app.get('/', (req, res) => {
 });
 
 client.connect((err) => {
-	const productCollection = client.db('organicdb').collection('products');
+	const productCollection = client.db('<DatabaseName>').collection('products');
 	app.get('/products', (req, res) => {
 		console.log(req);
 		productCollection.find({}).toArray((err, documents) => {
